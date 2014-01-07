@@ -29,6 +29,8 @@
 
 #include "STRCONST.h"
 
+#include <stdio.h>
+
 /* --- some simple utilities --- */
 
 GLOBALPROC MyMoveBytes(anyp srcPtr, anyp destPtr, si5b byteCount)
@@ -1945,9 +1947,9 @@ LOCALPROC RunEmulatedTicksToTrueTime(void)
 
 LOCALPROC RunOnEndOfSixtieth(void)
 {
-	while (ExtraTimeNotOver()) {
-		(void) SDL_Delay(NextIntTime - LastTime);
-	}
+	// while (ExtraTimeNotOver()) {
+	// 	(void) SDL_Delay(NextIntTime - LastTime);
+	// }
 
 	OnTrueTime = TrueEmulatedTime;
 	RunEmulatedTicksToTrueTime();
@@ -1957,7 +1959,7 @@ LOCALPROC WaitForTheNextEvent(void)
 {
 	SDL_Event event;
 
-	if (SDL_WaitEvent(&event)) {
+	if (SDL_PollEvent(&event)) {
 		HandleTheEvent(&event);
 	}
 }
@@ -1974,12 +1976,10 @@ LOCALPROC CheckForSystemEvents(void)
 
 LOCALPROC MainEventLoop(void)
 {
-	for (; ; ) {
+	int i;
+	for (i = 0; i < 10000; ++i) {
 		CheckForSystemEvents();
 		CheckForSavedTasks();
-		if (ForceMacOff) {
-			return;
-		}
 
 		if (CurSpeedStopped) {
 			WaitForTheNextEvent();
@@ -1988,6 +1988,7 @@ LOCALPROC MainEventLoop(void)
 			RunOnEndOfSixtieth();
 		}
 	}
+	m68k_print();
 }
 
 LOCALPROC ZapOSGLUVars(void)
@@ -2114,9 +2115,24 @@ int main(int argc, char **argv)
 
 	ZapOSGLUVars();
 	if (InitOSGLU()) {
-		MainEventLoop();
+		#ifdef EMSCRIPTEN
+		printf("emscripten_set_main_loop\n");
+		emscripten_set_main_loop(MainEventLoop, 100, 1);
+		#else
+		printf("MainEventLoop\n");
+		for (; ; ) {
+			MainEventLoop();
+			if (ForceMacOff) {
+				break;
+			}
+			break;
+		}
+		#endif
+
 	}
+	#ifndef EMSCRIPTEN
 	UnInitOSGLU();
 
 	return 0;
+	#endif
 }

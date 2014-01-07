@@ -5105,3 +5105,8 @@ GLOBALPROC m68k_go_nCycles(ui5b n)
 	regs.ResidualCycles = regs.MaxCyclesToGo;
 	regs.MaxCyclesToGo = 0;
 }
+
+
+void m68k_print() {
+	printf("pc 0x%x\n", m68k_getpc());
+}

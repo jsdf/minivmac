@@ -63,12 +63,12 @@ typedef si5b si5r;
 
 /* capabilities provided by platform specific code */
 
-#define MySoundEnabled 1
+#define MySoundEnabled 0
 
 #define MySoundRecenterSilence 0
 #define kLn2SoundSampSz 3
 
-#define dbglog_HAVE 0
+#define dbglog_HAVE 1
 
 #define NumDrives 6
 #define IncludeSonyRawMode 1

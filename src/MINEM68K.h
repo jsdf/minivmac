@@ -51,3 +51,5 @@ EXPORTPROC put_vm_long(CPTR addr, ui5r l);
 
 EXPORTPROC SetHeadATTel(ATTep p);
 EXPORTFUNC ATTep FindATTel(CPTR addr);
+
+void m68k_print();
